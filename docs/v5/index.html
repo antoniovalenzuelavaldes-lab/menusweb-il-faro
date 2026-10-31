@@ -82,7 +82,7 @@ footer{text-align:center;font:12px sans-serif;opacity:.7;padding:20px}
 <header class="portada" id="inicio">
   <div class="langs" id="langs"></div>
   <svg class="faro" viewBox="0 0 48 48"><path d="M19 42h10l-2-22h-6zM21 20l1-6h4l1 6M20 14h8l-2-4h-4zM24 6v4M12 12l6 3M36 12l-6 3M8 42h32"/></svg>
-  <h1>IL FARO</h1>
+  <h1 id="nom"></h1>
   <div class="sub" id="sub"></div>
   <div class="lema" id="lema"></div>
   <div class="frase" id="frase"></div>
@@ -99,7 +99,7 @@ footer{text-align:center;font:12px sans-serif;opacity:.7;padding:20px}
   <p class="aler" id="aler"></p>
 </main>
 <div class="tri"></div>
-<footer>IL FARO · Ristorante Pizzeria</footer>
+<footer id="pie"></footer>
 <button id="top" aria-label="Top">↑</button>
 <div id="modal"><div class="c" id="mc"></div></div>
 <script>
@@ -116,7 +116,7 @@ const T={
   nuevo:"Neu",pend:"[Preis]",aler:"Allergene: Bitte fragen Sie vor der Bestellung unser Personal. Die Angaben sind möglicherweise nicht vollständig geprüft.",
   ub:"So finden Sie uns",hor:"Öffnungszeiten",cont:"Kontakt",cerrar:"Schließen",al:{milk:"Milch",gluten:"Gluten",egg:"Ei",fish:"Fisch",shellfish:"Krebstiere",molluscs:"Weichtiere",nuts:"Schalenfrüchte",peanuts:"Erdnüsse",soy:"Soja",celery:"Sellerie",mustard:"Senf",sesame:"Sesam",sulphites:"Sulfite",lupin:"Lupinen"}}
 };
-const VARIANTE="revista", FOTOS="../fotos/", API="https://menusweb-api.antonio-valenzuela-valdes.workers.dev", RID="il-faro";
+let VARIANTE="revista"; const DIN=false, FOTOS="../fotos/", API="https://menusweb-api.antonio-valenzuela-valdes.workers.dev", RID="il-faro";
 const fu=f=>/^(https?:|data:)/.test(f)?f:FOTOS+f;
 let C=null;
 const R=CARTA.restaurante;
@@ -143,7 +143,8 @@ function plato(p,i,j){
 function pinta(){
  document.documentElement.lang=L;const t=T[L];
  $("langs").innerHTML=["es","en","de"].map(l=>`<button class="${l==L?"on":""}" data-l="${l}">${l.toUpperCase()}</button>`).join("");
- $("sub").textContent=R.subtitulo;$("lema").textContent=CARTA.textos.lema[L];$("frase").textContent=CARTA.textos.frase[L];
+ $("nom").textContent=R.nombre;$("sub").textContent=R.subtitulo||"";$("pie").textContent=R.nombre+(R.subtitulo?" · "+R.subtitulo:"");document.title=R.nombre+(R.subtitulo?" · "+R.subtitulo:"");
+ $("sub").style.display=R.subtitulo?"":"none";$("lema").textContent=CARTA.textos.lema[L];$("frase").textContent=CARTA.textos.frase[L];
  $("b-ver").textContent=t.ver;
  $("filtros").innerHTML=[[null,t.pref],["vegetariano",t.veg],["picante",t.pic]].map(([k,n])=>`<button class="${F==k?"on":""}" data-f="${k}">${n}</button>`).join("");
  if(VARIANTE==="pestanas"){const vis=CARTA.categorias.filter(c=>c.platos.some(p=>!p.oculto));if(!C||!vis.some(c=>c.id===C))C=vis[0]&&vis[0].id;
@@ -172,7 +173,9 @@ $("top").onclick=()=>scrollTo({top:0});
 addEventListener("scroll",()=>$("top").style.display=scrollY>600?"block":"none");
 pinta();
 (async()=>{if(!API)return;try{const r=await fetch(API+"/carta/"+RID);if(!r.ok)return;const d=await r.json();
- if(Array.isArray(d.categorias)){CARTA.categorias=d.categorias;if(Array.isArray(d.destacados)&&d.destacados.length)CARTA.destacados=d.destacados;pinta()}}catch(e){}})();
+ if(Array.isArray(d.categorias)){CARTA.categorias=d.categorias;if(Array.isArray(d.destacados)&&d.destacados.length)CARTA.destacados=d.destacados;
+ const a=d.ajustes||{};if(a.nombre)R.nombre=a.nombre;if(typeof a.subtitulo==="string")R.subtitulo=a.subtitulo;
+ if(DIN&&["lista","fotos","rejilla","pestanas","revista"].includes(a.variante))VARIANTE=a.variante;pinta()}}catch(e){}})();
 </script>
 </body>
 </html>
