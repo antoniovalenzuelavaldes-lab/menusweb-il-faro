@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /menusweb-il-faro/admin/
+Disallow: /menusweb-il-faro/disenos/
+Disallow: /menusweb-il-faro/v1/
+Disallow: /menusweb-il-faro/v2/
+Disallow: /menusweb-il-faro/v3/
+Disallow: /menusweb-il-faro/v4/
+Disallow: /menusweb-il-faro/v5/
+Sitemap: https://antoniovalenzuelavaldes-lab.github.io/menusweb-il-faro/sitemap.xml
